@@ -1,0 +1,441 @@
+/* Renders as a native <button> (see ProductCard.jsx) so the whole
+   card — not just a "view details" link inside it — is a real,
+   keyboard-reachable control that opens the product's detail popup.
+   The reset properties below undo the browser's default button
+   chrome (border, background, centered text, system font) so it
+   still looks and lays out exactly like the site's other cards. Kept
+   short on purpose — image, code, thermal-class badge, type, and a
+   "View Full Details" link — so a full grid of grades fits on screen
+   at once; the specs table, feature bullets and applications line
+   that used to live directly in the card now render inside the popup
+   instead (see .product-modal__body below), reusing these same
+   classes so the two views stay visually consistent. */
+.product-card {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  border-left: 4px solid var(--color-blue-500);
+}
+
+.product-card:hover,
+.product-card:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.product-card:focus-visible {
+  outline: 2px solid var(--color-blue-500);
+  outline-offset: 2px;
+}
+
+.product-card__media {
+  aspect-ratio: 4 / 3;
+  background: var(--color-sky-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.product-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.product-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.product-card__header,
+.product-card__type,
+.product-card__specs,
+.product-card__features,
+.product-card__applications,
+.product-card__view-link {
+  margin-inline: 24px;
+}
+
+.product-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  margin-bottom: 4px;
+}
+
+.product-card__code {
+  margin-bottom: 0;
+  font-size: 1.15rem;
+}
+
+.product-card__type {
+  color: var(--color-blue-600);
+  font-weight: 600;
+  font-size: 0.88rem;
+  margin-bottom: 16px;
+}
+
+/* Pushed to the bottom of the (flex-column) compact card via
+   margin-top: auto — the same trick .product-card__applications
+   already used below for the old full-card layout — so every card in
+   a grid row lines its link up on the same baseline regardless of how
+   long its code/type text runs. */
+.product-card__view-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: auto;
+  padding-top: 8px;
+  padding-bottom: 20px;
+  color: var(--color-blue-600);
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: gap var(--transition-fast);
+}
+
+.product-card:hover .product-card__view-link,
+.product-card:focus-visible .product-card__view-link {
+  gap: 8px;
+}
+
+.product-card__specs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 16px;
+  margin: 0 0 16px;
+  padding: 14px;
+  background: var(--color-sky-100);
+  border-radius: var(--radius-sm);
+}
+
+.product-card__specs dt {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-gray-600);
+  margin-bottom: 2px;
+}
+
+.product-card__specs dd {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--color-navy-900);
+}
+
+.product-card__features {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.product-card__features li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 0.88rem;
+  color: var(--color-gray-600);
+}
+
+.product-card__features li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.product-card__applications {
+  margin-top: auto;
+  margin-bottom: 0;
+  font-size: 0.88rem;
+  color: var(--color-gray-700);
+  padding-top: 12px;
+  padding-bottom: 24px;
+  border-top: 1px dashed var(--color-gray-200);
+}
+
+/* ---------- Product detail popup ----------
+   Opened from ProductCard on click (see Modal.jsx for the generic
+   overlay mechanics). Reuses .product-card__header/__type/__specs/
+   __features/__applications verbatim for the actual spec content, so
+   the popup reads as a bigger version of the same card rather than a
+   different design — only the image treatment and the outer body
+   wrapper are popup-specific. */
+.product-modal {
+  max-width: 560px;
+}
+
+.product-modal__media {
+  aspect-ratio: 16 / 10;
+  background: var(--color-sky-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.product-modal__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.product-modal__body {
+  padding-bottom: 8px;
+}
+
+@media (max-width: 480px) {
+  .product-modal__media {
+    aspect-ratio: 4 / 3;
+    padding: 20px;
+  }
+}
+
+/* ---------- Thermal class cards ---------- */
+.thermal-class-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 860px) {
+  .thermal-class-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.thermal-class-card {
+  background: var(--color-navy-900);
+  color: var(--color-white);
+  border-radius: var(--radius-md);
+  padding: 28px;
+}
+
+.thermal-class-card h3 {
+  color: var(--color-white);
+  margin-bottom: 8px;
+}
+
+.thermal-class-card p {
+  color: var(--color-gray-200);
+  font-size: 0.9rem;
+}
+
+.thermal-class-card__grades {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.thermal-class-card__grades span {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+/* ---------- Data tables ---------- */
+.data-table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 480px;
+  background: var(--color-white);
+}
+
+.data-table th,
+.data-table td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-gray-200);
+  font-size: 0.92rem;
+}
+
+.data-table th {
+  background: var(--color-navy-900);
+  color: var(--color-white);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tr:nth-child(even) td {
+  background: var(--color-sky-50);
+}
+
+/* ---------- Simple list card (impregnating resins) ---------- */
+.simple-list-card {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 32px;
+}
+
+.simple-list-card ul {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.simple-list-card li {
+  position: relative;
+  padding-left: 26px;
+  color: var(--color-gray-700);
+}
+
+.simple-list-card li::before {
+  content: '●';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--color-blue-600);
+}
+
+/* ---------- Specialty resin card ----------
+   Matches the site's global .card__icon chip (sky-100 tile, blue-600
+   icon) and hover-lift instead of the flat purple-accent-border
+   treatment this replaced — the purple was a one-off color nowhere
+   else in the theme's blue/navy palette. Laid out as an icon-left,
+   content-right row (rather than the icon-on-top layout global .card
+   uses) since these entries have no photo and read better as a
+   compact list-like row at only two per grid row. */
+.specialty-resin-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 28px;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.specialty-resin-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.specialty-resin-card__icon {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  background: var(--color-sky-100);
+  color: var(--color-blue-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+.specialty-resin-card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 8px;
+}
+
+.specialty-resin-card__header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.specialty-resin-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.specialty-resin-card__body p {
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .specialty-resin-card {
+    padding: 22px;
+  }
+}
+
+.safety-notes {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 28px 32px;
+}
+
+.safety-notes li {
+  position: relative;
+  padding-left: 22px;
+  margin-bottom: 10px;
+  color: var(--color-gray-700);
+  font-size: 0.92rem;
+}
+
+.safety-notes li::before {
+  content: '⚠';
+  position: absolute;
+  left: 0;
+  color: #c8890f;
+}
+
+.category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.category-tab {
+  border: 2px solid var(--color-gray-200);
+  background: var(--color-white);
+  color: var(--color-navy-800);
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: all var(--transition-fast);
+}
+
+.category-tab:hover {
+  border-color: var(--color-blue-500);
+}
+
+.category-tab--active {
+  background: var(--color-navy-800);
+  border-color: var(--color-navy-800);
+  color: var(--color-white);
+}

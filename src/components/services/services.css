@@ -1,0 +1,112 @@
+.service-card__points {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.service-card__points li {
+  position: relative;
+  padding-left: 18px;
+  color: var(--color-gray-600);
+  font-size: 0.92rem;
+}
+
+.service-card__points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-blue-500);
+}
+
+.service-banner {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.service-banner img {
+  width: 100%;
+  height: auto;
+}
+
+/* An "expanding accordion" row — like a set of vertical photo panels
+   where one is widened and the rest yield, rather than a fixed 50/50
+   split. Needs an explicit height (unlike the old grid+aspect-ratio
+   split) because the panels no longer size themselves from their own
+   image: a panel mid-transition sits between two widths, and letting
+   its own `aspect-ratio` set the height would make the row's height
+   wobble with it. Fixing the row's height and having each panel
+   stretch to fill it (flex default `align-items: stretch`) keeps the
+   height constant and confines the animation to width alone, matching
+   the reference. */
+.service-banner--accordion {
+  display: flex;
+  gap: 4px;
+  height: clamp(260px, 34vw, 440px);
+}
+
+.service-banner__panel {
+  position: relative;
+  overflow: hidden;
+  flex: 1 1 0%;
+  /* Same easing growing in and yielding back keeps both panels moving
+     in step whichever one is becoming expanded. */
+  transition: flex-grow 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.service-banner__panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Which panel carries this class is driven by React state in
+   ServicesPage.jsx (state.expandedPanel), not a bare `:hover` — the
+   twin-tank panel (index 0) starts expanded by default, and entering
+   the *other* panel is what shifts it over; leaving the banner
+   entirely returns to the index-0 default rather than freezing on
+   whichever was last hovered. Both machine photos are proportionally
+   wider than their collapsed (narrower) box, so `object-fit: cover`
+   is already cropping their sides a little there; growing a panel
+   past ~55% flips that — the box becomes proportionally *wider* than
+   the photo, so `cover` reveals its full width instead (and crops a
+   little off the top/bottom rather than the sides). That's the
+   "reveals more" feeling this is meant to give, using the existing
+   photos as-is rather than a second cropped-for-this asset. */
+.service-banner__panel.is-expanded {
+  flex-grow: 2.3;
+}
+
+@media (max-width: 600px) {
+  .service-banner--accordion {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .service-banner__panel {
+    aspect-ratio: 4 / 3;
+    /* Touch has no hover to shift the expansion at all, so
+       state.expandedPanel just sits at its index-0 default forever —
+       but stacked in a column, an uneven split would read as a
+       layout mistake rather than an effect, so force both even here
+       regardless of which one "is-expanded". */
+    flex-grow: 1 !important;
+  }
+}
+
+.additional-services__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 700px) {
+  .additional-services__grid {
+    grid-template-columns: 1fr;
+  }
+}

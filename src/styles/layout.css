@@ -1,0 +1,260 @@
+/* ---------- Navbar ---------- */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--color-white);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Home only: the hero is a full-bleed frame sequence, so the header
+   floats transparent on top of it instead of pushing it down — the
+   footage runs edge-to-edge behind the logo and nav links. Taken out
+   of document flow (fixed) precisely so it stops reserving that
+   space; every other route keeps the plain sticky white header
+   above, unaffected. */
+.navbar--overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: transparent;
+  box-shadow: none;
+  transition: background var(--transition-base), box-shadow var(--transition-base);
+}
+
+/* Added once Navbar.jsx's scroll listener detects the hero has been
+   fully scrolled past — repaints the still-fixed header back to the
+   normal solid white/shadowed look for the rest of the page, instead
+   of staying transparent (and invisible-background) over the plain
+   white sections below the hero. */
+.navbar--overlay.navbar--overlay-solid {
+  background: var(--color-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar--overlay .navbar__links--open {
+  background: var(--color-white);
+  box-shadow: var(--shadow-md);
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: 12px;
+}
+
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar__logo {
+  height: 40px;
+  width: auto;
+}
+
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.navbar__link {
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  color: var(--color-navy-800);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.navbar__link:hover {
+  background: var(--color-sky-100);
+  color: var(--color-blue-600);
+}
+
+.navbar__link--active {
+  color: var(--color-blue-600);
+  background: var(--color-sky-100);
+}
+
+.navbar__cta {
+  margin-left: 8px;
+}
+
+.navbar__toggle {
+  display: none;
+  background: none;
+  border: none;
+  padding: 8px;
+}
+
+.navbar__toggle-bar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  margin: 5px 0;
+  background: var(--color-navy-800);
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+@media (max-width: 860px) {
+  .navbar__toggle {
+    display: block;
+  }
+
+  .navbar__links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    background: var(--color-white);
+    box-shadow: var(--shadow-md);
+    padding: 12px;
+    gap: 4px;
+    display: none;
+  }
+
+  .navbar__links--open {
+    display: flex;
+  }
+
+  .navbar__cta {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  background: var(--color-navy-900);
+  color: var(--color-gray-200);
+}
+
+.footer__top {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  gap: 32px;
+  padding-block: 56px 32px;
+}
+
+@media (max-width: 900px) {
+  .footer__top {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .footer__top {
+    grid-template-columns: 1fr;
+  }
+}
+
+.footer__logo {
+  height: 36px;
+  width: auto;
+  margin-bottom: 12px;
+  filter: brightness(0) invert(1);
+}
+
+.footer__about {
+  color: var(--color-gray-400);
+  max-width: 320px;
+}
+
+.footer__heading {
+  color: var(--color-white);
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.footer__list li {
+  margin-bottom: 10px;
+}
+
+.footer__list a {
+  color: var(--color-gray-400);
+  transition: color var(--transition-fast);
+}
+
+.footer__list a:hover {
+  color: var(--color-blue-400);
+}
+
+.footer__socials {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.footer__social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-white);
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: background var(--transition-fast);
+}
+
+.footer__social-link:hover {
+  background: var(--color-blue-600);
+}
+
+.footer__bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-block: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: var(--color-gray-400);
+}
+
+.footer__credit a {
+  color: var(--color-blue-400);
+  font-weight: 600;
+}
+
+/* ---------- Page shell ---------- */
+.page {
+  min-height: 60vh;
+}
+
+.page-header {
+  background: linear-gradient(135deg, var(--color-navy-900), var(--color-navy-700));
+  color: var(--color-white);
+  padding-block: 64px;
+  text-align: center;
+}
+
+.page-header h1 {
+  color: var(--color-white);
+  margin-bottom: 8px;
+}
+
+.page-header p {
+  color: var(--color-gray-200);
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.breadcrumb {
+  font-size: 0.85rem;
+  color: var(--color-blue-400);
+  margin-bottom: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

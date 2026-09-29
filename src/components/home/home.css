@@ -1,0 +1,548 @@
+.hero {
+  padding-block: clamp(40px, 8vw, 88px);
+  background: linear-gradient(180deg, var(--color-sky-50), var(--color-white));
+  overflow: hidden;
+}
+
+/* The frame-sequence track needs position: sticky to work on its
+   descendants, and any ancestor `overflow` other than visible breaks
+   sticky — so this hero variant can't clip like the plain
+   photo-grid hero. */
+.hero--sequence {
+  overflow: visible;
+}
+
+.hero__grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 48px;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .hero__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero__media {
+    order: -1;
+    max-width: 360px;
+    margin-inline: auto;
+  }
+}
+
+.hero__badges {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+/* Wraps just the headline so the rotating seal badge can be pinned
+   against it — the badge is positioned absolutely, anchored to the
+   title's top-left corner (top: 0; left: 0) and pulled up/left of it
+   via the translate() below. The vertical anchor (-75%) was measured
+   against the actual rendered glyph metrics of the "E" in "Electrical"
+   (canvas measureText for its cap-height ink, not just the line box)
+   so the ring's bottom edge lands right around the letter's vertical
+   half, per client direction ("slightly down... half part of E") —
+   see the build notes for the exact math if this needs revisiting.
+   The horizontal anchor still overlaps into the first letter the way
+   the original reference screenshot showed. The wrapper carries the
+   headline's own margin-bottom (zeroed on the title itself below)
+   since the title is no longer the only thing determining this
+   block's footprint. */
+.hero__title-wrap {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.hero__title-wrap .hero__title {
+  margin-bottom: 0;
+}
+
+.hero__title-wrap .rotating-badge {
+  /* Custom properties (rather than a hardcoded transform) so the
+     plantseq-intro entrance keyframes below can build on the same
+     resting offset instead of duplicating it — and so the narrow-
+     viewport override just below can nudge that offset without
+     fighting the keyframes' own hardcoded end value. */
+  --badge-anchor-x: -50%;
+  --badge-anchor-y: -75%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(var(--badge-anchor-x), var(--badge-anchor-y));
+  z-index: 1;
+}
+
+@media (max-width: 480px) {
+  /* At the narrowest phone widths the container's own edge padding
+     (16px) is smaller than half the badge's shrunk width, so the
+     full corner overlap would push the badge past the viewport's
+     left edge and get clipped. Easing the horizontal anchor in keeps
+     the whole ring on-screen while still overlapping the title. */
+  .hero__title-wrap .rotating-badge {
+    --badge-anchor-x: -25%;
+  }
+}
+
+.hero__title {
+  font-size: clamp(2.15rem, 4.3vw, 3.35rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+
+/* On the frame-sequence hero the headline sits directly on the video
+   frame with nothing behind it — no white panel, no glow, so the
+   footage stays fully visible edge to edge. Legibility comes from a
+   soft shadow hugging the letterforms themselves instead. */
+.plantseq-overlay .hero__title {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.55), 0 2px 18px rgba(255, 255, 255, 0.4);
+}
+
+.hero__title-accent {
+  /* A darker, higher-contrast gradient than a pale tint — this text
+     sits directly on photographic content, so it needs to stay
+     legible on its own rather than relying on a light backdrop. */
+  background: linear-gradient(100deg, var(--color-blue-600) 0%, var(--color-navy-700) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero__subtitle {
+  color: var(--color-gray-600);
+  font-size: 1.05rem;
+  line-height: 1.65;
+  max-width: 540px;
+  margin-bottom: 28px;
+}
+
+.hero__actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.hero__photo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.hero__photo-grid img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ---------- Frame-sequence plant assembly hero ----------
+   Real footage of a Dr. Ultra VPI plant assembling itself, played
+   back frame-by-frame as the visitor scrolls, used as a full-bleed
+   hero background — no 3D object, just the actual reference video
+   decoded onto a canvas, and no darkening scrim over it: the footage
+   itself is shot on a light studio backdrop, so dark text reads
+   clearly straight on top of it. The headline appears first, over
+   the near-empty opening frame; once scrolling begins it hands off
+   to the stage captions that track the build. The site header floats
+   transparent over this section only (see .navbar--overlay in
+   layout.css) so the footage runs edge-to-edge under it. */
+.hero--sequence {
+  padding-bottom: 0;
+  padding-top: 0;
+}
+
+.plantseq-track {
+  height: 720vh;
+  position: relative;
+}
+
+@media (max-width: 900px) {
+  .plantseq-track {
+    height: 560vh;
+  }
+}
+
+.plantseq-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+@media (max-width: 900px) {
+  .plantseq-sticky {
+    gap: 14px;
+  }
+}
+
+.plantseq-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* Matches the frames' own whitened backdrop exactly, so on
+     viewports much taller/narrower than the footage (phones, narrow
+     windows) the letterbox bars left by object-fit: contain in
+     PlantSequence.jsx are invisible rather than reading as a box
+     around the video. */
+  background: var(--color-white);
+}
+
+.plantseq-canvas-wrap {
+  position: absolute;
+  inset: 0;
+}
+
+.plantseq-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Sits inside its own wrapping `.container` in HeroSection.jsx now
+   (rather than carrying the `.container` class itself) — that outer
+   element is the same one the navbar's logo sits inside, so this
+   column's left edge always starts at the navbar logo's x position,
+   even on viewports wider than `--container-max` where a centered
+   `.container` no longer touches the raw viewport edge.
+
+   An earlier version put both `.container` and `.plantseq-overlay` on
+   one element and tried to override `.container`'s own centering
+   in-place (zeroing margin-inline, hand-setting padding-left to a
+   flat clamp()). That flattened the column against the *raw viewport*
+   edge instead of the *centered container's* edge, so past 1200px +
+   its padding the caption drifted left of the logo above it instead
+   of lining up with it — this nested structure removes the need for
+   that override entirely, since `.plantseq-overlay` no longer has
+   `.container`'s centering to fight in the first place. (It also
+   used to lose a separate specificity fight over max-width to
+   `.container`'s own — not a risk here either, now that the two
+   classes live on different elements.) */
+.plantseq-overlay {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 620px;
+  /* Extra breathing room beyond the wrapping `.container`'s own edge
+     padding — the caption reads better sitting a bit further in than
+     flush against the same edge the logo starts at. */
+  padding-left: clamp(28px, 5vw, 64px);
+}
+
+/* Sits directly in .plantseq-sticky (a sibling of .plantseq-overlay,
+   not nested inside it) so it can be centered across the full hero
+   width instead of being confined to the caption column's 620px box.
+   The headline is kept to a single line (see .hero__title below) so
+   the centered block reads as one clean, balanced unit. Carries the
+   whole "first frame" — badges, headline, the opening stage's
+   kicker/copy, the CTA buttons, and the progress dots — as one
+   uniformly-spaced, centered column via `gap`; each child's own
+   margin-bottom is zeroed out below so the gap is the only source of
+   spacing (avoids doubling up with rules those classes also carry
+   when used elsewhere, e.g. .plantseq-kicker's margin-bottom in the
+   crossfading stages below). */
+.plantseq-intro {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding-top: clamp(96px, 17vh, 152px);
+  padding-inline: clamp(16px, 4vw, 32px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 900px) {
+  .plantseq-intro {
+    padding-top: clamp(84px, 18vh, 112px);
+  }
+}
+
+.plantseq-intro.is-hidden {
+  opacity: 0;
+  transform: translateY(-14px);
+  pointer-events: none;
+}
+
+/* One-time entrance on page load, staggered so each row settles in
+   turn — badges, then headline, then the opening kicker/copy, then
+   the buttons, then the progress dots. The scroll-driven show/hide
+   above (.is-hidden) takes over once this has played; everything here
+   fades out together as one unit since it's all inside .plantseq-intro. */
+.plantseq-intro .hero__badges {
+  animation: plantseq-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Wrap spacing comes from .plantseq-intro's own `gap` here, same as
+   its other children — the wrap's base margin-bottom (needed in the
+   left-aligned fallback hero, which has no such gap) would otherwise
+   double up with it. */
+.plantseq-intro .hero__title-wrap {
+  margin-bottom: 0;
+}
+
+/* The badge gets its own rise-in keyframes rather than reusing
+   plain `plantseq-rise` — that animation's `transform` values would
+   overwrite the badge's positioning transform (translate(-50%, -50%),
+   which pins it to the title's corner) for the animation's duration
+   and, via `both`, permanently afterwards. These keyframes fold the
+   same rise offset in on top of that fixed corner position instead,
+   so the badge settles into the correct spot rather than losing it. */
+.plantseq-intro .hero__title-wrap .rotating-badge {
+  animation: plantseq-rise-badge 0.8s cubic-bezier(0.16, 1, 0.3, 1) both 0.1s;
+}
+
+@keyframes plantseq-rise-badge {
+  from {
+    opacity: 0;
+    transform: translate(var(--badge-anchor-x), calc(var(--badge-anchor-y) + 18px));
+  }
+  to {
+    opacity: 1;
+    transform: translate(var(--badge-anchor-x), var(--badge-anchor-y));
+  }
+}
+
+/* Sized to fit "Electrical Insulating Varnishes & Resins" on one
+   line down to tablet widths (smaller than the fallback hero's
+   uncapped clamp, which was sized for a two-line wrap) — below the
+   680px cutoff there isn't room for one line at a legible size, so
+   it's allowed to wrap again there, still centered. */
+.plantseq-intro .hero__title {
+  margin-bottom: 0;
+  color: var(--color-navy-900);
+  font-size: clamp(1.55rem, 3.4vw, 3.1rem);
+  white-space: nowrap;
+  animation: plantseq-rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both 0.1s;
+}
+
+@media (max-width: 680px) {
+  .plantseq-intro .hero__title {
+    white-space: normal;
+  }
+}
+
+/* The opening stage's kicker/copy, hardcoded into the intro (see
+   HeroSection.jsx) rather than pulled from the crossfading
+   .plantseq-stages loop — it never needs to crossfade against
+   anything, so it just gets the same one-time rise-in as the rest of
+   the intro instead of the stage-crossfade opacity mechanic used
+   below for stages 1+. margin-bottom is zeroed since .plantseq-intro's
+   own `gap` handles spacing here (the un-zeroed margin-bottom on the
+   bare .plantseq-kicker class is still needed for its other use inside
+   the absolutely-positioned .plantseq-stage boxes below). */
+.plantseq-intro .plantseq-kicker {
+  margin-bottom: 0;
+  animation: plantseq-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both 0.18s;
+}
+
+.plantseq-intro .plantseq-copy {
+  margin-bottom: 0;
+  animation: plantseq-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both 0.26s;
+}
+
+.plantseq-intro .hero__actions {
+  animation: plantseq-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both 0.34s;
+}
+
+.plantseq-intro .plantseq-dots {
+  animation: plantseq-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both 0.42s;
+}
+
+@keyframes plantseq-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.plantseq-stages {
+  position: relative;
+  min-height: clamp(110px, 14vw, 150px);
+}
+
+.plantseq-stage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.plantseq-stage.is-active {
+  pointer-events: auto;
+}
+
+/* The kicker and copy fade/rise in as two separate layers rather than
+   one flat block-opacity crossfade — the kicker leads with a small
+   springy pop, the paragraph follows a beat later with a smoother
+   glide, so each stage change reads as a deliberate two-step reveal
+   instead of a single flat fade. */
+.plantseq-kicker {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-blue-600);
+  background: var(--color-sky-100);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+  opacity: 0;
+  transform: translateY(14px) scale(0.94);
+  transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.plantseq-stage.is-active .plantseq-kicker {
+  opacity: 1;
+  transform: none;
+}
+
+.plantseq-copy {
+  color: var(--color-navy-800);
+  font-size: 1.08rem;
+  line-height: 1.6;
+  max-width: 520px;
+  margin-bottom: 0;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6), 0 2px 14px rgba(255, 255, 255, 0.45);
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.09s,
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.09s;
+}
+
+.plantseq-stage.is-active .plantseq-copy {
+  opacity: 1;
+  transform: none;
+}
+
+.plantseq-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.plantseq-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-gray-200);
+  transition: background var(--transition-base), transform var(--transition-base);
+}
+
+.plantseq-dot.is-active {
+  background: var(--color-blue-600);
+  transform: scale(1.3);
+}
+
+.plantseq-scroll-hint {
+  position: absolute;
+  z-index: 1;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-navy-700);
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6), 0 2px 12px rgba(255, 255, 255, 0.45);
+  animation: plantseq-bob 1.8s ease-in-out infinite;
+  transition: opacity 0.4s ease;
+}
+
+.plantseq-scroll-hint.is-hidden {
+  opacity: 0;
+}
+
+@keyframes plantseq-bob {
+  0%, 100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, 6px);
+  }
+}
+
+@media (max-width: 900px) {
+  .plantseq-overlay {
+    max-width: none;
+    gap: 14px;
+  }
+
+  .plantseq-copy {
+    max-width: none;
+  }
+
+  /* Narrower column wraps the longest caption to more lines than the
+     desktop min-height accounts for — since captions are absolutely
+     positioned (to crossfade), an undersized box lets the tallest one
+     spill into the buttons/dots below it instead of pushing them
+     down. Reserve enough room for the longest caption at phone
+     widths instead. */
+  .plantseq-stages {
+    min-height: clamp(150px, 46vw, 210px);
+  }
+}
+
+@media (max-width: 420px) {
+  .plantseq-stages {
+    min-height: clamp(170px, 50vw, 220px);
+  }
+}
+
+/* ---------- Highlights ---------- */
+.highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+@media (max-width: 900px) {
+  .highlights-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .highlights-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- CTA banner ---------- */
+.cta-banner {
+  background: linear-gradient(135deg, var(--color-navy-900), var(--color-navy-700));
+  color: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: clamp(32px, 6vw, 56px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.cta-banner__text h2 {
+  color: var(--color-white);
+  margin-bottom: 8px;
+}
+
+.cta-banner__text p {
+  color: var(--color-gray-200);
+  margin-bottom: 0;
+}

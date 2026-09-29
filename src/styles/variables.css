@@ -1,0 +1,44 @@
+:root {
+  /* Brand palette — derived from the Dr. Ultra logo & literature */
+  --color-navy-900: #081a3a;
+  --color-navy-800: #0b2a5b;
+  --color-navy-700: #123a75;
+  --color-blue-600: #1f6fd6;
+  --color-blue-500: #2f8fe0;
+  --color-blue-400: #56a9f0;
+  --color-sky-100: #eef4fc;
+  --color-sky-50: #f6faff;
+
+  --color-accent-purple: #5b3a86;
+
+  --color-white: #ffffff;
+  --color-gray-900: #1a1f29;
+  --color-gray-700: #3c4656;
+  --color-gray-600: #5b6675;
+  --color-gray-400: #98a2b3;
+  --color-gray-200: #e4e9f0;
+  --color-gray-100: #f5f7fa;
+
+  --color-success: #1f9d55;
+  --color-success-bg: #e7f7ee;
+  --color-danger: #d6483f;
+  --color-danger-bg: #fdeceb;
+
+  --font-family-base: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial,
+    sans-serif;
+  --font-family-display: 'Sora', var(--font-family-base);
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  --shadow-sm: 0 1px 3px rgba(8, 26, 58, 0.08);
+  --shadow-md: 0 8px 24px rgba(8, 26, 58, 0.1);
+  --shadow-lg: 0 16px 40px rgba(8, 26, 58, 0.14);
+
+  --container-max: 1200px;
+  --section-padding-y: clamp(48px, 7vw, 96px);
+
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+}
